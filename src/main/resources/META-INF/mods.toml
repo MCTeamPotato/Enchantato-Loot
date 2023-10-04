@@ -1,0 +1,12 @@
+modLoader="javafml"
+loaderVersion="[36,)"
+license="LGPL-v3"
+
+[[mods]]
+modId="enchantato_loot"
+version="${file.jarVersion}"
+displayName="EnchantatoLoot"
+authors="TeamPotato"
+description='''
+A Minecraft mod.
+'''
