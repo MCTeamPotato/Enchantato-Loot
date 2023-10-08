@@ -2,7 +2,7 @@ package com.teampotato.enchantato_loot;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.Util;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.random.WeightedRandom;
@@ -93,7 +93,7 @@ public class EnchantatoLoot {
         List<EnchantmentInstance> list = new ObjectArrayList<>();
         boolean flag = pStack.is(Items.BOOK);
 
-        for(Enchantment enchantment : BuiltInRegistries.ENCHANTMENT) {
+        for(Enchantment enchantment : Registry.ENCHANTMENT) {
             if ((!enchantment.isTreasureOnly() || pAllowTreasure) && canEnchantLoot(enchantment) && (enchantment.canApplyAtEnchantingTable(pStack) || (flag && enchantment.isAllowedOnBooks()))) {
                 for(int i = enchantment.getMaxLevel(); i > enchantment.getMinLevel() - 1; --i) {
                     if (pLevel >= enchantment.getMinCost(i) && pLevel <= enchantment.getMaxCost(i)) {
