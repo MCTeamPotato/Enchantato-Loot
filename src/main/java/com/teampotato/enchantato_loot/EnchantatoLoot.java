@@ -7,7 +7,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.random.WeightedRandom;
 import net.minecraft.world.item.EnchantedBookItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -61,7 +60,6 @@ public class EnchantatoLoot {
 
     public static @NotNull List<EnchantmentInstance> selectEnchantment(RandomSource pRandom, @NotNull ItemStack pItemStack, int pLevel, boolean pAllowTreasure) {
         List<EnchantmentInstance> list = new ObjectArrayList<>();
-        Item item = pItemStack.getItem();
         int i = pItemStack.getEnchantmentValue();
         if (i <= 0) {
             return list;
@@ -96,7 +94,7 @@ public class EnchantatoLoot {
         boolean flag = pStack.is(Items.BOOK);
 
         for(Enchantment enchantment : BuiltInRegistries.ENCHANTMENT) {
-            if ((!enchantment.isTreasureOnly() || pAllowTreasure) && enchantment.isDiscoverable() && (onEnchant(enchantment, pStack) || (flag && enchantment.isAllowedOnBooks()))) {
+            if ((!enchantment.isTreasureOnly() || pAllowTreasure) && canEnchantLoot(enchantment) && (enchantment.canApplyAtEnchantingTable(pStack) || (flag && enchantment.isAllowedOnBooks()))) {
                 for(int i = enchantment.getMaxLevel(); i > enchantment.getMinLevel() - 1; --i) {
                     if (pLevel >= enchantment.getMinCost(i) && pLevel <= enchantment.getMaxCost(i)) {
                         list.add(new EnchantmentInstance(enchantment, i));
@@ -110,12 +108,12 @@ public class EnchantatoLoot {
     }
 
     @SuppressWarnings("DataFlowIssue")
-    public static boolean onEnchant(Enchantment instance, ItemStack arg) {
-        if (!EnchantatoLoot.INVERTED_MODE.get()) {
-            if (EnchantatoLoot.ENCHANTMENT_LIST.get().contains(ForgeRegistries.ENCHANTMENTS.getKey(instance).toString())) return false;
-            return instance.canEnchant(arg);
+    public static boolean canEnchantLoot(Enchantment enchantment) {
+        if (!INVERTED_MODE.get()) {
+            if (ENCHANTMENT_LIST.get().contains(ForgeRegistries.ENCHANTMENTS.getKey(enchantment).toString())) return false;
+            return enchantment.isDiscoverable();
         } else {
-            return instance.canEnchant(arg) && EnchantatoLoot.ENCHANTMENT_LIST.get().contains(ForgeRegistries.ENCHANTMENTS.getKey(instance).toString());
+            return enchantment.isDiscoverable() && ENCHANTMENT_LIST.get().contains(ForgeRegistries.ENCHANTMENTS.getKey(enchantment).toString());
         }
     }
 }
