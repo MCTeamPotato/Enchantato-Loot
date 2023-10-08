@@ -4,7 +4,6 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.Util;
 import net.minecraft.core.Registry;
 import net.minecraft.util.Mth;
-import net.minecraft.util.RandomSource;
 import net.minecraft.util.random.WeightedRandom;
 import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.item.ItemStack;
@@ -20,6 +19,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Random;
 
 @Mod("enchantato_loot")
 public class EnchantatoLoot {
@@ -40,7 +40,7 @@ public class EnchantatoLoot {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, COMMON_CONFIG, "enchantato-loot.toml");
     }
 
-    public static ItemStack enchantItem(RandomSource pRandom, ItemStack pStack, int pLevel, boolean pAllowTreasure) {
+    public static ItemStack enchantItem(Random pRandom, ItemStack pStack, int pLevel, boolean pAllowTreasure) {
         List<EnchantmentInstance> list = selectEnchantment(pRandom, pStack, pLevel, pAllowTreasure);
         boolean flag = pStack.is(Items.BOOK);
         if (flag) {
@@ -58,20 +58,18 @@ public class EnchantatoLoot {
         return pStack;
     }
 
-    public static @NotNull List<EnchantmentInstance> selectEnchantment(RandomSource pRandom, @NotNull ItemStack pItemStack, int pLevel, boolean pAllowTreasure) {
+    public static @NotNull List<EnchantmentInstance> selectEnchantment(Random pRandom, @NotNull ItemStack pItemStack, int pLevel, boolean pAllowTreasure) {
         List<EnchantmentInstance> list = new ObjectArrayList<>();
-        int i = pItemStack.getEnchantmentValue();
-        if (i <= 0) {
-            return list;
-        } else {
+        int i = pItemStack.getItemEnchantability();
+        if (i > 0) {
             pLevel += 1 + pRandom.nextInt(i / 4 + 1) + pRandom.nextInt(i / 4 + 1);
             float f = (pRandom.nextFloat() + pRandom.nextFloat() - 1.0F) * 0.15F;
-            pLevel = Mth.clamp(Math.round((float)pLevel + (float)pLevel * f), 1, Integer.MAX_VALUE);
+            pLevel = Mth.clamp(Math.round((float) pLevel + (float) pLevel * f), 1, Integer.MAX_VALUE);
             List<EnchantmentInstance> list1 = getAvailableEnchantmentResults(pLevel, pItemStack, pAllowTreasure);
             if (!list1.isEmpty()) {
                 WeightedRandom.getRandomItem(pRandom, list1).ifPresent(list::add);
 
-                while(pRandom.nextInt(50) <= pLevel) {
+                while (pRandom.nextInt(50) <= pLevel) {
                     if (!list.isEmpty()) {
                         EnchantmentHelper.filterCompatibleEnchantments(list1, Util.lastOf(list));
                     }
@@ -85,8 +83,8 @@ public class EnchantatoLoot {
                 }
             }
 
-            return list;
         }
+        return list;
     }
 
     public static @NotNull List<EnchantmentInstance> getAvailableEnchantmentResults(int pLevel, @NotNull ItemStack pStack, boolean pAllowTreasure) {
