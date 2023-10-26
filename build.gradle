@@ -19,7 +19,7 @@ version = mod_version
 group = 'com.teampotato.enchantato_loot'
 archivesBaseName = 'enchantato_loot'
 
-java.toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+java.toolchain.languageVersion.set(JavaLanguageVersion.of(8))
 
 minecraft {
     mappings channel: 'parchment', version: '2022.03.06-1.16.5'
